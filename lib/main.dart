@@ -43,7 +43,7 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
       home: MyHomePage(
-        title: "Calculator",
+        title: "Calcmaster",
         toggleTheme: toggleTheme,
         isDarkMode: isDarkMode,
       ),
@@ -202,7 +202,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               top: 20
                             ),
                             child: Container(
-                              child: Center(child: Text('Calculator',style: TextStyle(fontSize: 30,fontWeight: FontWeight.w500,color: Colors.blueAccent),)),
+                              child: Center(child: Text('Calcmaster',style: TextStyle(fontSize: 30,fontWeight: FontWeight.w500,color: Colors.blueAccent),)),
                             ),
                           ),
                         ),
