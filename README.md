@@ -1,10 +1,22 @@
-# calculator
+# CalMaster 🧮
 
-A new Flutter project.
+A powerful and elegant calculator app built with Flutter.
 
-## Getting Started
+## 📥 Download
 
-This project is a starting point for a Flutter application.
+[![Download APK](https://img.shields.io/badge/Download-APK-brightgreen?style=for-the-badge&logo=android)](https://github.com/Saurabh071107/flutter-calculator-app/releases/latest/download/app-release.apk)
+
+> **Latest Release:** [View all releases](https://github.com/Saurabh071107/flutter-calculator-app/releases)
+
+## ✨ Features
+
+- Clean and modern UI
+- Basic arithmetic operations
+- Responsive design
+
+## 🛠️ Getting Started
+
+This project is built with Flutter.
 
 A few resources to get you started if this is your first Flutter project:
 
