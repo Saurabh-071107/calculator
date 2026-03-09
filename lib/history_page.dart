@@ -1,10 +1,70 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
-class HistoryPage extends StatelessWidget {
+class HistoryPage extends StatefulWidget {
   final Function(String result) onItemTap;
 
   const HistoryPage({super.key, required this.onItemTap});
+
+  @override
+  State<HistoryPage> createState() => _HistoryPageState();
+}
+
+class _HistoryPageState extends State<HistoryPage> {
+  List<Map<String, dynamic>> _historyData = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadHistory();
+  }
+
+  Future<void> _loadHistory() async {
+    final prefs = await SharedPreferences.getInstance();
+    List<String> historyList = prefs.getStringList('history') ?? [];
+    
+    setState(() {
+      _historyData = historyList.map((item) {
+        try {
+          return jsonDecode(item) as Map<String, dynamic>;
+        } catch (e) {
+          return <String, dynamic>{};
+        }
+      }).where((item) => item.isNotEmpty).toList();
+      _isLoading = false;
+    });
+  }
+
+  Future<void> _deleteHistoryItem(String id) async {
+    final prefs = await SharedPreferences.getInstance();
+    List<String> historyList = prefs.getStringList('history') ?? [];
+    
+    historyList.removeWhere((item) {
+      try {
+        final decoded = jsonDecode(item) as Map<String, dynamic>;
+        return decoded['id'] == id;
+      } catch (e) {
+        return false;
+      }
+    });
+    
+    await prefs.setStringList('history', historyList);
+    
+    setState(() {
+      _historyData.removeWhere((item) => item['id'] == id);
+    });
+  }
+
+  Future<void> _clearAllHistory() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('history');
+    
+    setState(() {
+      _historyData.clear();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +74,7 @@ class HistoryPage extends StatelessWidget {
       backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          /// same gradient of home
+  
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -32,11 +92,11 @@ class HistoryPage extends StatelessWidget {
               ),
             ),
           ),
-          /// CONTENT
+       
           SafeArea(
             child: Column(
               children: [
-                /// Top Bar
+              
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: Row(
@@ -54,111 +114,93 @@ class HistoryPage extends StatelessWidget {
                       ),
                       IconButton(
                         icon: const Icon(Icons.delete),
-                        onPressed: () async {
-                          var collection = FirebaseFirestore.instance.collection('history');
-                          var snapshots = await collection.get();
-                          for (var doc in snapshots.docs) {
-                            await doc.reference.delete();
-                          }
-                        },
+                        onPressed: _historyData.isEmpty ? null : _clearAllHistory,
                       )
                     ],
                   ),
                 ),
                 const SizedBox(height: 10),
-                /// History List
+             
                 Expanded(
-                  child: StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseFirestore.instance.collection('history').orderBy('timestamp', descending: true).snapshots(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState ==
-                          ConnectionState.waiting) {
-                        return const Center(
-                            child: CircularProgressIndicator());
-                      }
-                      if (!snapshot.hasData ||
-                          snapshot.data!.docs.isEmpty) {
-                        return const Center(
-                          child: Text(
-                            "No History Yet",
-                            style: TextStyle(fontSize: 25,fontWeight: FontWeight.w500),
-                          ),
-                        );
-                      }
-                      final docs = snapshot.data!.docs;
-                      return ListView.builder(
-                        itemCount: docs.length,
-                        itemBuilder: (context, index) {
-                          var data = docs[index];
-                          return Dismissible(
-                            key: Key(data.id),
-                            direction: DismissDirection.endToStart,
-                            onDismissed: (direction) {
-                              FirebaseFirestore.instance
-                                  .collection('history')
-                                  .doc(data.id)
-                                  .delete();
-                            },
-                            background: Container(
-                              margin: const EdgeInsets.symmetric(
-                                  horizontal: 15, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: Colors.red,
-                                borderRadius:
-                                BorderRadius.circular(15),
+                  child: _isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : _historyData.isEmpty
+                          ? const Center(
+                              child: Text(
+                                "No History Yet",
+                                style: TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
                               ),
-                              alignment: Alignment.centerRight,
-                              padding:
-                              const EdgeInsets.only(right: 20),
-                              child: const Icon(Icons.delete,
-                                  color: Colors.white),
-                            ),
-                            child: Container(
-                              margin: const EdgeInsets.symmetric(
-                                  horizontal: 15, vertical: 6),
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: isDark
-                                    ? const Color(0xFF2A2A2A)
-                                    : Colors.white,
-                                borderRadius:
-                                BorderRadius.circular(15),
-                                boxShadow: isDark
-                                    ? []
-                                    : [
-                                  BoxShadow(
-                                    color: Colors.grey
-                                        .withOpacity(0.2),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 4),
-                                  )
-                                ],
-                              ),
-                              child: ListTile(
-                                onTap: () {
-                                  onItemTap(data['result']);
-                                  Navigator.pop(context);
-                                },
-                                title: Text(
-                                  data['expression'],
-                                  style: const TextStyle(
-                                    fontSize: 16,
+                            )
+                          : ListView.builder(
+                              itemCount: _historyData.length,
+                              itemBuilder: (context, index) {
+                                var data = _historyData[index];
+                                return Dismissible(
+                                  key: Key(data['id']?.toString() ?? index.toString()),
+                                  direction: DismissDirection.endToStart,
+                                  onDismissed: (direction) {
+                                    if (data['id'] != null) {
+                                      _deleteHistoryItem(data['id']);
+                                    }
+                                  },
+                                  background: Container(
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 15, vertical: 6),
+                                    decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      borderRadius:
+                                      BorderRadius.circular(15),
+                                    ),
+                                    alignment: Alignment.centerRight,
+                                    padding:
+                                    const EdgeInsets.only(right: 20),
+                                    child: const Icon(Icons.delete,
+                                        color: Colors.white),
                                   ),
-                                ),
-                                subtitle: Text(
-                                  "= ${data['result']}",
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
+                                  child: Container(
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 15, vertical: 6),
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      color: isDark
+                                          ? const Color(0xFF2A2A2A)
+                                          : Colors.white,
+                                      borderRadius:
+                                      BorderRadius.circular(15),
+                                      boxShadow: isDark
+                                          ? []
+                                          : [
+                                        BoxShadow(
+                                          color: Colors.grey
+                                              .withValues(alpha: 0.2),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 4),
+                                        )
+                                      ],
+                                    ),
+                                    child: ListTile(
+                                      onTap: () {
+                                        widget.onItemTap(data['result'] ?? '');
+                                        Navigator.pop(context);
+                                      },
+                                      title: Text(
+                                        data['expression'] ?? '',
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      subtitle: Text(
+                                        "= ${data['result'] ?? ''}",
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
+                                );
+                              },
                             ),
-                          );
-                        },
-                      );
-                    },
-                  ),
                 ),
               ],
             ),

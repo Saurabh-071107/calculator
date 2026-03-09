@@ -1,0 +1,31 @@
+﻿Resolving dependencies...
+Downloading packages...
+  matcher 0.12.18 (0.12.19 available)
+  math_expressions 2.7.0 (3.1.0 available)
+  meta 1.17.0 (1.18.1 available)
+  petitparser 6.1.0 (7.0.2 available)
+  source_span 1.10.1 (1.10.2 available)
+  test_api 0.7.9 (0.7.10 available)
+  xml 6.5.0 (6.6.1 available)
+Got dependencies!
+7 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+Analyzing calculator...                                         
+
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\history_page.dart:176:48 - deprecated_member_use
+  error - Target of URI doesn't exist: 'package:math_expressions/package.dart' - lib\main.dart:5:8 - uri_does_not_exist
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\main.dart:76:66 - deprecated_member_use
+  error - Undefined class 'Parser' - lib\main.dart:195:11 - undefined_class
+  error - The method 'Parser' isn't defined for the type '_MyHomePageState' - lib\main.dart:195:22 - undefined_method
+  error - Undefined class 'Expression' - lib\main.dart:196:11 - undefined_class
+  error - Undefined class 'ContextModel' - lib\main.dart:197:11 - undefined_class
+  error - The method 'ContextModel' isn't defined for the type '_MyHomePageState' - lib\main.dart:197:29 - undefined_method
+  error - Undefined name 'EvaluationType' - lib\main.dart:198:38 - undefined_identifier
+   info - Unnecessary use of multiple underscores - lib\main.dart:287:44 - unnecessary_underscores
+   info - Unnecessary use of multiple underscores - lib\main.dart:287:48 - unnecessary_underscores
+   info - Unnecessary use of multiple underscores - lib\main.dart:293:62 - unnecessary_underscores
+  error - Expected to find ';' - lib\main.dart:417:8 - expected_token
+  error - Expected to find ')' - lib\main.dart:417:9 - expected_token
+  error - Expected to find '}' - lib\main.dart:417:9 - expected_token
+warning - Unused import: 'package:flutter/material.dart' - test\widget_test.dart:8:8 - unused_import
+
