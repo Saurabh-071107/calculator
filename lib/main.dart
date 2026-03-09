@@ -33,7 +33,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         brightness: Brightness.light,
         primaryColor: Colors.blueAccent,
-        scaffoldBackgroundColor: Colors.transparent, // Background will be handled by gradient
+        scaffoldBackgroundColor: Colors.transparent, 
       ),
       darkTheme: ThemeData(
         brightness: Brightness.dark,
@@ -70,7 +70,6 @@ class _MyHomePageState extends State<MyHomePage> {
   String display = "0";
   String expression = "";
   
-  // Define button colors based on their type
   Color getButtonColor(String title, bool isDark) {
     if (['AC', 'C', 'DEL'].contains(title)) {
       return isDark ? const Color(0xFFE57373) : Colors.redAccent.withValues(alpha: 0.8);
@@ -276,7 +275,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: SafeArea(
           child: Column(
           children: [
-            // Top Bar
+         
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: Row(
