@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 class HistoryPage extends StatefulWidget {
-  final Function(String result) onItemTap;
+  final void Function(String) onItemTap;
 
   const HistoryPage({super.key, required this.onItemTap});
 

@@ -186,6 +186,10 @@ class _MyHomePageState extends State<MyHomePage> {
           String originalExpression = finalExpression;
 
           finalExpression = finalExpression.replaceAll("X", "*");
+          finalExpression = finalExpression.replaceAll("asin(", "arcsin(");
+          finalExpression = finalExpression.replaceAll("acos(", "arccos(");
+          finalExpression = finalExpression.replaceAll("atan(", "arctan(");
+          finalExpression = finalExpression.replaceAll("log(", "log(10,");
           
           Parser p = Parser();
           Expression exp = p.parse(finalExpression);
